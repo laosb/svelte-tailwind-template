@@ -4,6 +4,8 @@ This is a project template for [Svelte](https://svelte.dev) apps with [Tailwind 
 
 This template has PurgeCSS preconfigured, and use Yarn instead of NPM for packaging. Prettier has been configured to use a different style from Svelte official for my personal convinience.
 
+TypeScript support is added and I encourage you to use TypeScript and the entry point has been changed into TypeScript.
+
 To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
 
 ```bash

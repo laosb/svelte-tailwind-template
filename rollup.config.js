@@ -3,29 +3,33 @@ import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
-import sveltePreprocess from 'svelte-preprocess'
+import typescript from '@rollup/plugin-typescript'
+import autoPreprocess from 'svelte-preprocess'
 
 const production = !process.env.ROLLUP_WATCH
 
+export const svelteConfig = {
+  // enable run-time checks when not in production
+  dev: !production,
+  preprocess: autoPreprocess({ sourceMap: !production, postcss: true }),
+  // we'll extract any component CSS out into
+  // a separate file - better for performance
+  css: (css) => {
+    css.write('public/build/bundle.css')
+  },
+}
+
 export default {
-  input: 'src/main.js',
+  input: 'src/main.ts',
   output: {
-    sourcemap: true,
+    sourcemap: !production,
     format: 'iife',
     name: 'app',
-    file: 'public/build/bundle.js'
+    file: 'public/build/bundle.js',
   },
   plugins: [
-    svelte({
-      // enable run-time checks when not in production
-      dev: !production,
-      preprocess: sveltePreprocess({ postcss: true }),
-      // we'll extract any component CSS out into
-      // a separate file - better for performance
-      css: css => {
-        css.write('public/build/bundle.css')
-      }
-    }),
+    typescript({ sourceMap: !production }),
+    svelte(svelteConfig),
 
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
@@ -34,7 +38,7 @@ export default {
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
     resolve({
       browser: true,
-      dedupe: ['svelte']
+      dedupe: ['svelte'],
     }),
     commonjs(),
 
@@ -48,11 +52,11 @@ export default {
 
     // If we're building for production (npm run build
     // instead of npm run dev), minify
-    production && terser()
+    production && terser(),
   ],
   watch: {
-    clearScreen: false
-  }
+    clearScreen: false,
+  },
 }
 
 function serve() {
@@ -65,9 +69,9 @@ function serve() {
 
         require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
           stdio: ['ignore', 'inherit', 'inherit'],
-          shell: true
+          shell: true,
         })
       }
-    }
+    },
   }
 }
